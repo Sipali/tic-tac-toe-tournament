@@ -11,3 +11,6 @@ frontend/node_modules/
 # Build folder
 frontend/dist/
 frontend/build/
+# Environment files — NEVER push to GitHub
+frontend/.env
+frontend/.env.production

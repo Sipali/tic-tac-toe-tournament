@@ -1,5 +1,5 @@
 
-// frontend/src/components/Auth.jsx
+
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -13,19 +13,20 @@ export default function Auth({ setUser, user }) {
     if (user) navigate('/game');
   }, [user, navigate]);
 
+  // PRODUCTION + LOCAL MEIN DONO KAAM KAREGA
+  const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+
   const submit = async (e) => {
     e.preventDefault();
     const endpoint = isLogin ? '/login' : '/register';
 
     try {
-      const res = await axios.post(`http://localhost:5000/api/auth${endpoint}`, form);
-      
-      // Save token properly
+      const res = await axios.post(`${API_URL}/api/auth${endpoint}`, form);
       localStorage.setItem('token', res.data.token);
       setUser(res.data);
       navigate('/game');
     } catch (err) {
-      alert(err.response?.data?.msg || 'Something went wrong! Check username/password');
+      alert(err.response?.data?.msg || 'Wrong username/password or server down!');
     }
   };
 

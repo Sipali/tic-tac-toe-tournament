@@ -1,5 +1,5 @@
 
-// frontend/src/components/Game.jsx
+
 import { useState } from 'react';
 import BoardNew from './BoardNew';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +10,9 @@ export default function Game({ user }) {
   const [levelsWon, setLevelsWon] = useState(0);
   const navigate = useNavigate();
 
+  // YE LINE SABSE ZAROORI HAI
+  const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+
   const handleWin = () => {
     const newWins = levelsWon + 1;
     setLevelsWon(newWins);
@@ -17,7 +20,7 @@ export default function Game({ user }) {
       setTimeout(() => setCurrentLevel(currentLevel + 1), 2000);
     } else {
       const won = newWins >= 3;
-      axios.post('http://localhost:5000/api/game/save', { levelsWon: newWins, tournamentWon: won }, {
+      axios.post(`${API_URL}/api/game/save`, { levelsWon: newWins, tournamentWon: won }, {
         headers: { 'x-auth-token': localStorage.getItem('token') }
       }).catch(() => {});
       alert(won ? 'CHAMPION!' : `Finished with ${newWins}/5 wins`);
@@ -26,7 +29,7 @@ export default function Game({ user }) {
   };
 
   const handleLose = () => {
-    axios.post('http://localhost:5000/api/game/save', { levelsWon, tournamentWon: false }, {
+    axios.post(`${API_URL}/api/game/save`, { levelsWon, tournamentWon: false }, {
       headers: { 'x-auth-token': localStorage.getItem('token') }
     }).catch(() => {});
     alert(`Game Over! You won ${levelsWon}/5`);
@@ -45,9 +48,7 @@ export default function Game({ user }) {
       <div className="text-center">
         <h2 className="text-5xl font-bold mb-4">Level {currentLevel} (Difficulty: {currentLevel}/5)</h2>
         <p className="text-3xl text-yellow-300 mb-10">Wins so far: {levelsWon}</p>
-
         <BoardNew onWin={handleWin} onLose={handleLose} />
-
       </div>
     </div>
   );
