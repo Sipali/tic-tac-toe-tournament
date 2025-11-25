@@ -1,0 +1,13 @@
+# Password wale files kabhi upload nahi honge
+.env
+backend/.env
+frontend/.env
+
+# Node modules
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+
+# Build folder
+frontend/dist/
+frontend/build/
