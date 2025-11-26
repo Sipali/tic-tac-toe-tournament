@@ -1,5 +1,3 @@
-
-
 import { useState } from 'react';
 import BoardNew from './BoardNew';
 import { useNavigate } from 'react-router-dom';
@@ -10,29 +8,57 @@ export default function Game({ user }) {
   const [levelsWon, setLevelsWon] = useState(0);
   const navigate = useNavigate();
 
-  // YE LINE SABSE ZAROORI HAI
+  // YE PERFECT HAI (Render pe .env.production se aa raha hoga)
   const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 
-  const handleWin = () => {
+  const handleWin = async () => {
     const newWins = levelsWon + 1;
     setLevelsWon(newWins);
+
     if (currentLevel < 5) {
       setTimeout(() => setCurrentLevel(currentLevel + 1), 2000);
     } else {
-      const won = newWins >= 3;
-      axios.post(`${API_URL}/api/game/save`, { levelsWon: newWins, tournamentWon: won }, {
-        headers: { 'x-auth-token': localStorage.getItem('token') }
-      }).catch(() => {});
-      alert(won ? 'CHAMPION!' : `Finished with ${newWins}/5 wins`);
+      const tournamentWon = newWins >= 3;
+
+      try {
+        await axios.post(
+          `${API_URL}/api/game/save`,
+          { levelsWon: newWins, tournamentWon },
+          {
+            headers: {
+              // YE SABSE BADA FIX — TOKEN HEADER GALAT THA!
+              Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+          }
+        );
+        console.log('Score saved successfully!');
+      } catch (err) {
+        console.error('Score save failed:', err.response?.data || err.message);
+        alert('Score not saved! Check internet or login again.');
+      }
+
+      alert(tournamentWon ? 'CHAMPION! Trophy Won!' : `Tournament Over! ${newWins}/5 Wins`);
       navigate('/leaderboard');
     }
   };
 
-  const handleLose = () => {
-    axios.post(`${API_URL}/api/game/save`, { levelsWon, tournamentWon: false }, {
-      headers: { 'x-auth-token': localStorage.getItem('token') }
-    }).catch(() => {});
-    alert(`Game Over! You won ${levelsWon}/5`);
+  const handleLose = async () => {
+    try {
+      await axios.post(
+        `${API_URL}/api/game/save`,
+        { levelsWon, tournamentWon: false },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        }
+      );
+      console.log('Score saved (loss)');
+    } catch (err) {
+      console.error('Score save failed on loss:', err.response?.data || err.message);
+    }
+
+    alert(`Game Over! You won ${levelsWon}/5 levels`);
     navigate('/leaderboard');
   };
 
