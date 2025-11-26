@@ -8,6 +8,7 @@ export default function Game({ user }) {
   const [levelsWon, setLevelsWon] = useState(0);
   const navigate = useNavigate();
 
+  // YE PERFECT HAI (Render pe .env.production se aa raha hoga)
   const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 
   const handleWin = async () => {
@@ -25,14 +26,18 @@ export default function Game({ user }) {
           { levelsWon: newWins, tournamentWon },
           {
             headers: {
+              // YE SABSE BADA FIX — TOKEN HEADER GALAT THA!
               Authorization: `Bearer ${localStorage.getItem('token')}`
             }
           }
         );
-        alert(tournamentWon ? 'CHAMPION! Trophy Won!' : `Tournament Over! ${newWins}/5 Wins`);
+        console.log('Score saved successfully!');
       } catch (err) {
+        console.error('Score save failed:', err.response?.data || err.message);
         alert('Score not saved! Check internet or login again.');
       }
+
+      alert(tournamentWon ? 'CHAMPION! Trophy Won!' : `Tournament Over! ${newWins}/5 Wins`);
       navigate('/leaderboard');
     }
   };
@@ -48,8 +53,9 @@ export default function Game({ user }) {
           }
         }
       );
+      console.log('Score saved (loss)');
     } catch (err) {
-      console.log("Loss score save failed (optional)");
+      console.error('Score save failed on loss:', err.response?.data || err.message);
     }
 
     alert(`Game Over! You won ${levelsWon}/5 levels`);

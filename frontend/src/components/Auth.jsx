@@ -1,3 +1,5 @@
+
+
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +13,7 @@ export default function Auth({ setUser, user }) {
     if (user) navigate('/game');
   }, [user, navigate]);
 
+  // PRODUCTION + LOCAL MEIN DONO KAAM KAREGA
   const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 
   const submit = async (e) => {
@@ -20,7 +23,7 @@ export default function Auth({ setUser, user }) {
     try {
       const res = await axios.post(`${API_URL}/api/auth${endpoint}`, form);
       localStorage.setItem('token', res.data.token);
-      setUser(res.data.user);  // ya res.data jaisa tune pehle kiya tha
+      setUser(res.data);
       navigate('/game');
     } catch (err) {
       alert(err.response?.data?.msg || 'Wrong username/password or server down!');
